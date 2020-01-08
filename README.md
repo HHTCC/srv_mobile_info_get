@@ -20,6 +20,3 @@
 - 到 app/config/config.js 目录下修改各种配置
 - 到根目录下 最后命令行启动 npm run app 即可 
 - 启动完成后在可访问浏览器输入 [本机地址]<http://localhost:监听端口>/ 如果显示·服务器正常运行·说明启动成功
-
-## PS
-- LOG4JS使用的路径写法可能只在windows下有效
