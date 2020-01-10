@@ -1,6 +1,6 @@
 # KOA框架和数据库和log4jf使用说明
 ## 工具
-- 在线调试 [http请求]<http://www.ojit.com/httptest>
+- 在线调试 [http请求](http://www.ojit.com/httptest)
 
 ## 系统
 - Windows/Linux
@@ -19,4 +19,4 @@
 - 到根目录下 命令行运行 npm install 安装库组件
 - 到 app/config/config.js 目录下修改各种配置
 - 到根目录下 最后命令行启动 npm run app 即可 
-- 启动完成后在可访问浏览器输入 [本机地址]<http://localhost:监听端口>/ 如果显示·服务器正常运行·说明启动成功
+- 启动完成后在可访问浏览器输入 [本机地址]<http://localhost:监听端口>/ 如果显示 ·服务器正常运行· 说明启动成功
