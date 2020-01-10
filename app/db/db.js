@@ -1,5 +1,4 @@
 const db = require('../mysql/mysql');
-const db_core = require('../mysql_back/mysql');
 
 //验证登录
 exports.assignLogin = async function (account, password) {
