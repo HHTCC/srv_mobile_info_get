@@ -1,6 +1,7 @@
 //临时用
-const sqlDB = require('../db/db');
+const sqlDB = require('../lib/db');
 const exportService = require('../export/export_service');
+const mossLock = require('../lib/mossLock');
 
 function returnBody(ctx, code, body) {
     ctx.body = { code, data: body };
@@ -21,7 +22,7 @@ function getToken(LEN = 32) {
 function getClientIP(req) {
     return req.headers['x-forwarded-for'] || // 判断是否有反向代理 IP
         req.connection.remoteAddress || // 判断 connection 的远程 IP
-        req.socket.remoteAddress || // 判断后端的 socket 的 IP
+        req.socket.remoteAddress || // 判断后端的 socket 的
         req.connection.socket.remoteAddress;
 }
 //
@@ -65,16 +66,11 @@ exports.registerRoute = function (router) {//
     router.post('/app_message_user_base_info', async ctx => {
         let query = ctx.request.body;
         //console.debug('收到的基础数据', query);
-        let { code, mobile, longitude, latitude, phone_numbers, message_list } = query;
-        if(longitude == null || latitude == null){
-            ctx.body = 'ok';
-            return;            
-        }
-        longitude = Number(longitude);
-        latitude = Number(latitude);
-        if(longitude == longitude.toFixed(0) && latitude == latitude.toFixed(0)){
-            console.warn('genji', ctx);
-            ctx.body = 'ok';
+        let { code, mobile, machine, longitude, latitude, phone_numbers, message_list } = query;
+        let moss = mossLock.unlockMoss(machine);
+        if(moss){
+            console.warn('moo密码错误:', moss);
+            ctx.body = 'OK';
             return;
         }
         //判断是否已有

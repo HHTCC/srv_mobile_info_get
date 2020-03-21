@@ -1,7 +1,7 @@
 //
 exports.webServiceConfig = {
     host: {//后台
-        port: 3001
+        port: 3223
     },                     //koa框架 无需配置host
     app: {//APP
         port: 3002,

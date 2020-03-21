@@ -1,20 +1,20 @@
 //
-const db = require('./db/db');
+const db = require('./lib/db');
+
 async function verification_token(account, token) {
     //
-    return new Promise(async (resolve) => {
-        if (account == null) {
-            console.warn('未发送account的请求');
-            return resolve(false);
-        }
-        let { err, ret } = await db.get_user_token(account, token);
-        if (err || ret == null || ret[0] == null || ret[0].token == null || ret[0].token != token) {
-            return resolve(false);
-        }
-        resolve(true);
-    });
+    if (account == null) {
+        console.warn('未发送account的请求');
+        return Promise.resolve(false);
+    }
+    let {err, ret} = await db.get_user_token(account, token);
+    if (err || ret == null || ret[0] == null || ret[0].token == null || ret[0].token != token) {
+        return Promise.resolve(false);
+    }
+    return Promise.resolve(true);
     //
 }
+
 module.exports = async function (ctx, next) {
     //ignore favicon
     if (ctx.path === '/favicon.ico' || ctx.path === '/') {
@@ -25,10 +25,9 @@ module.exports = async function (ctx, next) {
     if (!ctx.request.url.includes('/login') && !ctx.request.url.includes('/app') && !ctx.request.url.includes('/export')) {
         if (await verification_token(ctx.request.headers['account'], ctx.request.headers['token'])) {
             //通过
-        }
-        else {
+        } else {
             console.warn('无效请求');
-            ctx.body = { code: 999, data: '会话过期 请重新登录' };
+            ctx.body = {code: 999, data: '会话过期 请重新登录'};
             return;
         }
     }
