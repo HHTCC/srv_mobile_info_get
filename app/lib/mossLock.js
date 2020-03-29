@@ -9,7 +9,7 @@ let lockMoss = function(){
     const passwordLength = 10;
     //
     for (let i = 0; i < 5; i++) {
-        //不重复随机 区间[1,9] 不需要0是因为防止第一位为固定码 其实也可改成[0,9]
+        //不重复随机 区间[1,9] 不需要0是因为防止第一位为0
         let rand_One_Nine = 0;
         do {
             rand_One_Nine = Math.floor(Math.random() * 9) + 1;
@@ -32,7 +32,7 @@ let lockMoss = function(){
         randNum *= 10;
         //是否为随机数
         if (randPosAry.includes(i)) {
-            //随机[1,9]
+            //随机[0,9]
             randNum += Math.floor(Math.random() * 10);
         } else {
             //固定数
