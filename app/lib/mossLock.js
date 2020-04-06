@@ -44,6 +44,10 @@ let lockMoss = function(){
 
 let mossMap = {};
 let unlockMoss = function(mossNum) {
+    //补0
+    const PrefixInteger = function (num, m) {
+        return (Array(m).join(0) + num).slice(-m);
+    }
     if(!mossNum){
         return '未传入moss密码';
     }
@@ -56,6 +60,7 @@ let unlockMoss = function(mossNum) {
     let d = myDate.getDate();        //获取当前日(1-31)
     let randLeft = String(Math.floor(mossNum / 1e10));
     let randRight = String(mossNum % 1e10);
+    randRight = PrefixInteger(randRight, 10);
     console.log(randLeft, randRight);
     let calcArray = [];
     calcArray[0] =(y - m - d) % 10;
