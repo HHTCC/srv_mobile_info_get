@@ -1,17 +1,20 @@
-//
+﻿//
 exports.webServiceConfig = {
     host: {//后台
         port: 3223
     },                     //koa框架 无需配置host
     app: {//APP
         port: 3002,
+    },
+    most:{//后台
+        port: 3111,
     }
 };
 //
 exports.sqlServiceConfig = {
     host: '127.0.0.1',              //数据库地址
     user: 'root',                   //登录用户名
-    password: '123456',             //登录密码
+    password: '123456',//'1cujUGdTG0xDjzbm',             //登录密码
     database: 'and_ios_web_data',   //数据库名
     port: 3306                      //数据库端口
 };

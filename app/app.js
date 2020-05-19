@@ -79,7 +79,7 @@ process.on('uncaughtException', function (err) {
 });
 
 //
-console.info(copy[9]);
+console.info(copy[1]);
 console.log('服务器启动完成[' + webServiceConfig[SERVER_TYPE].port + '], 耗时', Date.now() - l_t, 'ms');
 //
 
